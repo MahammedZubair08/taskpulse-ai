@@ -1,17 +1,23 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  # Add services here later
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16
+
+    container_name: taskpulse-postgres
+
+    restart: always
+
     environment:
-      POSTGRES_USER: taskpulse
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: taskpulse_db
+      POSTGRES_DB: taskpulse
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
     ports:
       - "5432:5432"
+
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  postgres-data:

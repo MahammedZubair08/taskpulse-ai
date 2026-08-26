@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskPulse AI — API Tester</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+          margin: 0;
+          font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+          background: #f4f7fb;
+          color: #172033;
+        }
+        header {
+          background: #172033;
+          color: white;
+          padding: 20px 28px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+        }
+        header h1 { margin: 0; font-size: 22px; }
+        header span { font-size: 13px; opacity: .75; }
+        .container {
+          max-width: 1200px;
+          margin: 24px auto;
+          padding: 0 18px;
+        }
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 18px;
+        }
+        .card {
+          background: white;
+          border: 1px solid #dfe5ee;
+          border-radius: 12px;
+          padding: 18px;
+          box-shadow: 0 3px 12px rgba(20, 35, 60, .05);
+        }
+        .wide { grid-column: 1 / -1; }
+        h2 {
+          margin: 0 0 14px;
+          font-size: 17px;
+        }
+        h3 {
+          margin: 16px 0 8px;
+          font-size: 14px;
+        }
+        label {
+          display: block;
+          margin: 9px 0 5px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #4b5870;
+        }
+        input, textarea, select {
+          width: 100%;
+          border: 1px solid #cfd7e4;
+          border-radius: 8px;
+          padding: 10px;
+          font: inherit;
+          background: white;
+        }
+        textarea { min-height: 82px; resize: vertical; }
+        button {
+          border: 0;
+          border-radius: 8px;
+          padding: 10px 14px;
+          margin-top: 12px;
+          cursor: pointer;
+          font-weight: 700;
+          background: #2563eb;
+          color: white;
+        }
+        button.secondary { background: #64748b; }
+        button.danger { background: #dc2626; }
+        button.success { background: #059669; }
+        button + button { margin-left: 6px; }
+        .status {
+          margin-top: 12px;
+          padding: 9px 11px;
+          border-radius: 8px;
+          font-size: 13px;
+          background: #eef2ff;
+          color: #3730a3;
+          white-space: pre-wrap;
+        }
+        .status.ok { background: #ecfdf5; color: #047857; }
+        .status.error { background: #fef2f2; color: #b91c1c; }
+        pre {
+          margin: 0;
+          padding: 14px;
+          background: #111827;
+          color: #e5e7eb;
+          border-radius: 9px;
+          overflow: auto;
+          max-height: 440px;
+          font-size: 12px;
+          line-height: 1.5;
+        }
+        .token {
+          word-break: break-all;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          padding: 9px;
+          border-radius: 7px;
+          font-size: 11px;
+          min-height: 42px;
+        }
+        .row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .row3 {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 10px;
+        }
+        .muted { color: #64748b; font-size: 12px; }
+        .task-actions { margin-top: 8px; }
+        @media (max-width: 800px) {
+          .grid { grid-template-columns: 1fr; }
+          .wide { grid-column: auto; }
+          .row, .row3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>TaskPulse AI — API Tester</h1>
+        <span>Register → Login → User → Task CRUD</span>
+    </div>
+    <div>
+        <span id="serverLabel"></span>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="card wide">
+        <h2>Server</h2>
+        <div class="row">
+            <div>
+                <label>Backend Base URL</label>
+                <input id="baseUrl" value="http://localhost:8080">
+            </div>
+            <div>
+                <label>JWT Token</label>
+                <div id="token" class="token">No token stored.</div>
+            </div>
+        </div>
+        <button class="secondary" onclick="clearToken()">Clear Token</button>
+        <button class="secondary" onclick="healthCheck()">Health Check</button>
+        <button class="secondary" onclick="getMe()">GET /api/users/me</button>
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <h2>1. Register</h2>
+
+            <label>First Name</label>
+            <input id="regFirstName" value="Zubair">
+
+            <label>Last Name</label>
+            <input id="regLastName" value="Shaik">
+
+            <label>Email</label>
+            <input id="regEmail" type="email">
+
+            <label>Password</label>
+            <input id="regPassword" type="password" value="Password123">
+
+            <button class="success" onclick="register()">Register</button>
+            <div id="registerStatus" class="status">Waiting...</div>
+        </div>
+
+        <div class="card">
+            <h2>2. Login</h2>
+
+            <label>Email</label>
+            <input id="loginEmail" type="email">
+
+            <label>Password</label>
+            <input id="loginPassword" type="password" value="Password123">
+
+            <button onclick="login()">Login</button>
+            <div id="loginStatus" class="status">Waiting...</div>
+        </div>
+
+        <div class="card wide">
+            <h2>3. Create Task</h2>
+
+            <div class="row">
+                <div>
+                    <label>Title</label>
+                    <input id="taskTitle" value="Complete TaskPulse CRUD">
+                </div>
+                <div>
+                    <label>Priority</label>
+                    <select id="taskPriority">
+                        <option>LOW</option>
+                        <option selected>MEDIUM</option>
+                        <option>HIGH</option>
+                        <option>URGENT</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Description</label>
+            <textarea id="taskDescription">Test task created from the TaskPulse API tester.</textarea>
+
+            <div class="row3">
+                <div>
+                    <label>Deadline</label>
+                    <input id="taskDeadline" type="datetime-local">
+                </div>
+                <div>
+                    <label>Estimated Duration (minutes)</label>
+                    <input id="taskDuration" type="number" min="1" max="10080" value="60">
+                </div>
+                <div>
+                    <label>Task ID for Get/Update/Delete</label>
+                    <input id="taskId" type="number" placeholder="e.g. 1">
+                </div>
+            </div>
+
+            <button class="success" onclick="createTask()">POST Create</button>
+            <button onclick="getTask()">GET One</button>
+            <button onclick="updateTask()">PUT Update</button>
+            <button class="danger" onclick="deleteTask()">DELETE</button>
+
+            <div id="taskStatus" class="status">Waiting...</div>
+        </div>
+
+        <div class="card wide">
+            <h2>4. List Tasks</h2>
+
+            <div class="row3">
+                <div>
+                    <label>Status</label>
+                    <select id="filterStatus">
+                        <option value="">All</option>
+                        <option>TODO</option>
+                        <option>IN_PROGRESS</option>
+                        <option>COMPLETED</option>
+                        <option>CANCELLED</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Priority</label>
+                    <select id="filterPriority">
+                        <option value="">All</option>
+                        <option>LOW</option>
+                        <option>MEDIUM</option>
+                        <option>HIGH</option>
+                        <option>URGENT</option>
+                    </select>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button onclick="getTasks()">GET /api/tasks</button>
+                </div>
+            </div>
+
+            <div id="listStatus" class="status">Waiting...</div>
+        </div>
+
+        <div class="card wide">
+            <h2>Response</h2>
+            <pre id="response">{}</pre>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const TOKEN_KEY = "taskpulse_jwt";
+
+    function baseUrl() {
+      return document.getElementById("baseUrl").value.replace(/\/+$/, "");
+    }
+
+    function setResponse(data) {
+      document.getElementById("response").textContent =
+        typeof data === "string" ? data : JSON.stringify(data, null, 2);
+    }
+
+    function setStatus(id, message, ok = true) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.className = "status " + (ok ? "ok" : "error");
+    }
+
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+    function setToken(token) {
+      localStorage.setItem(TOKEN_KEY, token);
+      renderToken();
+    }
+
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      renderToken();
+      setResponse({});
+    }
+
+    function renderToken() {
+      const token = getToken();
+      document.getElementById("token").textContent =
+        token ? token : "No token stored.";
+    }
+
+    async function api(path, options = {}) {
+      const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      };
+
+      const token = getToken();
+      if (token) {
+        headers["Authorization"] = "Bearer " + token;
+      }
+
+      const response = await fetch(baseUrl() + path, {
+        ...options,
+        headers
+      });
+
+      const text = await response.text();
+      let data;
+
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = text;
+      }
+
+      setResponse({
+        httpStatus: response.status,
+        httpStatusText: response.statusText,
+        response: data
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          "HTTP " + response.status + ": " +
+          (typeof data === "string" ? data : JSON.stringify(data))
+        );
+      }
+
+      return data;
+    }
+
+    async function register() {
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value;
+
+      if (!email) {
+        setStatus("registerStatus", "Enter an email.", false);
+        return;
+      }
+
+      const body = {
+        firstName: document.getElementById("regFirstName").value.trim(),
+        lastName: document.getElementById("regLastName").value.trim(),
+        email,
+        password
+      };
+
+      try {
+        const data = await api("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify(body)
+        });
+
+        const token = data?.data?.token;
+        if (token) {
+          setToken(token);
+          setStatus("registerStatus", "Registration successful. JWT saved.", true);
+        } else {
+          setStatus("registerStatus", "Registration successful.", true);
+        }
+
+        document.getElementById("loginEmail").value = email;
+        document.getElementById("loginPassword").value = password;
+      } catch (e) {
+        setStatus("registerStatus", e.message, false);
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      try {
+        const data = await api("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password })
+        });
+
+        const token = data?.data?.token;
+
+        if (!token) {
+          throw new Error("Login succeeded but no JWT token was returned.");
+        }
+
+        setToken(token);
+        setStatus("loginStatus", "Login successful. JWT saved.", true);
+      } catch (e) {
+        setStatus("loginStatus", e.message, false);
+      }
+    }
+
+    async function healthCheck() {
+      try {
+        const data = await api("/api/health", { method: "GET" });
+        setResponse(data);
+      } catch (e) {
+        setResponse(e.message);
+      }
+    }
+
+    async function getMe() {
+      try {
+        await api("/api/users/me", { method: "GET" });
+      } catch (e) {
+        setResponse(e.message);
+      }
+    }
+
+    function getDeadline() {
+      const value = document.getElementById("taskDeadline").value;
+      return value ? value + ":00" : null;
+    }
+
+    async function createTask() {
+      const body = {
+        title: document.getElementById("taskTitle").value.trim(),
+        description: document.getElementById("taskDescription").value.trim(),
+        priority: document.getElementById("taskPriority").value,
+        deadline: getDeadline(),
+        estimatedDurationMinutes:
+          Number(document.getElementById("taskDuration").value) || null
+      };
+
+      try {
+        const data = await api("/api/tasks", {
+          method: "POST",
+          body: JSON.stringify(body)
+        });
+
+        const id = data?.data?.id;
+        if (id) {
+          document.getElementById("taskId").value = id;
+        }
+
+        setStatus("taskStatus", "Task created successfully.", true);
+      } catch (e) {
+        setStatus("taskStatus", e.message, false);
+      }
+    }
+
+    async function getTask() {
+      const id = document.getElementById("taskId").value;
+
+      if (!id) {
+        setStatus("taskStatus", "Enter a Task ID.", false);
+        return;
+      }
+
+      try {
+        await api("/api/tasks/" + encodeURIComponent(id), {
+          method: "GET"
+        });
+        setStatus("taskStatus", "Task retrieved.", true);
+      } catch (e) {
+        setStatus("taskStatus", e.message, false);
+      }
+    }
+
+    async function updateTask() {
+      const id = document.getElementById("taskId").value;
+
+      if (!id) {
+        setStatus("taskStatus", "Enter a Task ID.", false);
+        return;
+      }
+
+      const body = {
+        title: document.getElementById("taskTitle").value.trim() || null,
+        description: document.getElementById("taskDescription").value.trim() || null,
+        status: document.getElementById("updateStatus")?.value || "IN_PROGRESS",
+        priority: document.getElementById("taskPriority").value,
+        deadline: getDeadline(),
+        estimatedDurationMinutes:
+          Number(document.getElementById("taskDuration").value) || null
+      };
+
+      try {
+        await api("/api/tasks/" + encodeURIComponent(id), {
+          method: "PUT",
+          body: JSON.stringify(body)
+        });
+        setStatus("taskStatus", "Task updated.", true);
+      } catch (e) {
+        setStatus("taskStatus", e.message, false);
+      }
+    }
+
+    async function deleteTask() {
+      const id = document.getElementById("taskId").value;
+
+      if (!id) {
+        setStatus("taskStatus", "Enter a Task ID.", false);
+        return;
+      }
+
+      if (!confirm("Delete task " + id + "?")) return;
+
+      try {
+        await api("/api/tasks/" + encodeURIComponent(id), {
+          method: "DELETE"
+        });
+        setStatus("taskStatus", "Task deleted.", true);
+      } catch (e) {
+        setStatus("taskStatus", e.message, false);
+      }
+    }
+
+    async function getTasks() {
+      const status = document.getElementById("filterStatus").value;
+      const priority = document.getElementById("filterPriority").value;
+
+      const params = new URLSearchParams();
+
+      if (status) params.set("status", status);
+      if (priority) params.set("priority", priority);
+
+      const query = params.toString();
+      const path = "/api/tasks" + (query ? "?" + query : "");
+
+      try {
+        await api(path, { method: "GET" });
+        setStatus("listStatus", "Tasks retrieved.", true);
+      } catch (e) {
+        setStatus("listStatus", e.message, false);
+      }
+    }
+
+    // Default deadline: tomorrow at 18:00 local time.
+    function setDefaultDeadline() {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      d.setHours(18, 0, 0, 0);
+
+      const pad = n => String(n).padStart(2, "0");
+      const value =
+        d.getFullYear() + "-" +
+        pad(d.getMonth() + 1) + "-" +
+        pad(d.getDate()) + "T" +
+        pad(d.getHours()) + ":" +
+        pad(d.getMinutes());
+
+      document.getElementById("taskDeadline").value = value;
+    }
+
+    document.getElementById("serverLabel").textContent =
+      "Backend: " + baseUrl();
+
+    document.getElementById("baseUrl").addEventListener("input", e => {
+      document.getElementById("serverLabel").textContent =
+        "Backend: " + e.target.value.replace(/\/+$/, "");
+    });
+
+    renderToken();
+    setDefaultDeadline();
+
+    // Create a unique default email so repeated testing doesn't hit
+    // the unique-email constraint during registration.
+    document.getElementById("regEmail").value =
+      "zubair.test." + Date.now() + "@example.com";
+</script>
+
+</body>
+</html>

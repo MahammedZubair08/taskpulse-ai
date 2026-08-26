@@ -1,23 +1,37 @@
-version: "3.9"
+version: '3.8'
 
 services:
   postgres:
-    image: postgres:16
-
+    image: postgres:16-alpine
     container_name: taskpulse-postgres
-
-    restart: always
-
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: taskpulse
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-
-    ports:
-      - "5432:5432"
-
+      POSTGRES_PASSWORD: postgrespassword
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: taskpulse-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel notice
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  postgres-data:
+  postgres_data:
+  redis_data:

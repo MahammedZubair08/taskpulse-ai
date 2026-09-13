@@ -1,5 +1,6 @@
 package com.zubair.taskpulse.controller;
 
+import com.zubair.taskpulse.dto.ai.AIConfirmTaskRequest;
 import com.zubair.taskpulse.dto.ai.AITaskRequest;
 import com.zubair.taskpulse.dto.ai.AITaskResponse;
 import com.zubair.taskpulse.dto.task.CreateTaskRequest;
@@ -8,78 +9,74 @@ import com.zubair.taskpulse.service.AIRateLimitService;
 import com.zubair.taskpulse.service.AIService;
 import com.zubair.taskpulse.service.DeadlineParser;
 import com.zubair.taskpulse.service.TaskService;
-
-import com.zubair.taskpulse.service.impl.TaskServiceImpl;
 import jakarta.validation.Valid;
-
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/ai")
 @RequiredArgsConstructor
 public class AIController {
-    private final TaskServiceImpl taskService;
-    private final AIService aiService;
-    private final DeadlineParser deadlineParser;
-    private final AIRateLimitService aiRateLimitService;
-    @PostMapping("/extract-task")
-    public Map<String, String> extractTask(
-            @RequestBody Map<String, String> request
-    ) {
+        private final TaskService taskService;
+        private final AIService aiService;
+        private final DeadlineParser deadlineParser;
+        private final AIRateLimitService aiRateLimitService;
 
-        String prompt = request.get("prompt");
+        @PostMapping("/extract-task")
+        public ResponseEntity<AITaskResponse> extractTask(
+                        @Valid @RequestBody AITaskRequest request) {
 
-        String result = String.valueOf(aiService.extractTask(prompt));
+                AITaskResponse aiTask = aiService.extractTask(request.prompt());
 
-        return Map.of("result", result);
-    }
-    @PostMapping("/tasks")
-    public ResponseEntity<TaskResponse> createTaskFromAI(
-            @Valid @RequestBody AITaskRequest request,
-            Authentication authentication
-    ) {
-        String userEmail = authentication.getName();
+                LocalDateTime deadline = deadlineParser.parse(
+                                aiTask.deadlineExpression());
 
-        if (!aiRateLimitService.isAllowed(userEmail)) {
-            throw new ResponseStatusException(
-                    HttpStatus.TOO_MANY_REQUESTS,
-                    "AI request limit exceeded. Try again later."
-            );
+                AITaskResponse response = new AITaskResponse(
+                                aiTask.title(),
+                                aiTask.priority(),
+                                aiTask.deadlineExpression(),
+                                deadline,
+                                aiTask.estimatedDurationMinutes());
+
+                return ResponseEntity.ok(response);
         }
-        AITaskResponse aiTask =
-                aiService.extractTask(request.prompt());
 
-        CreateTaskRequest taskRequest = new CreateTaskRequest();
+        @PostMapping("/tasks")
+        public ResponseEntity<TaskResponse> createTaskFromAI(
+                        @Valid @RequestBody AIConfirmTaskRequest request,
+                        Authentication authentication) {
 
-        taskRequest.setTitle(aiTask.title());
-        taskRequest.setDescription(null);
-        taskRequest.setPriority(aiTask.priority());
-        taskRequest.setEstimatedDurationMinutes(
-                aiTask.estimatedDurationMinutes()
-        );
+                String userEmail = authentication.getName();
 
-        taskRequest.setDeadline(
-                deadlineParser.parse(aiTask.deadlineExpression())
-        );
+                CreateTaskRequest taskRequest = new CreateTaskRequest();
 
-        TaskResponse response =
-                taskService.createTask(
-                        taskRequest,
-                        authentication.getName()
-                );
+                taskRequest.setTitle(
+                                request.title());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
-    }
+                taskRequest.setDescription(
+                                request.description());
+
+                taskRequest.setPriority(
+                                request.priority());
+
+                taskRequest.setDeadline(
+                                request.deadline());
+
+                taskRequest.setEstimatedDurationMinutes(
+                                request.estimatedDurationMinutes());
+
+                TaskResponse response = taskService.createTask(
+                                taskRequest,
+                                userEmail);
+
+                return ResponseEntity
+                                .status(HttpStatus.CREATED)
+                                .body(response);
+        }
 }

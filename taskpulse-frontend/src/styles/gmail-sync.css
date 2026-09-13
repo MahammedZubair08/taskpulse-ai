@@ -1,0 +1,258 @@
+.gmail-sync-section {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.gmail-sync-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.gmail-sync-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.gmail-icon {
+    font-size: 32px;
+    background: rgba(56, 189, 248, 0.1);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.gmail-sync-title h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 4px 0;
+}
+
+.gmail-sync-title p {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.gmail-sync-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gmail-btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.connect-btn {
+    background: linear-gradient(135deg, #ea4335, #c5221f);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(234, 67, 53, 0.3);
+}
+
+.connect-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(234, 67, 53, 0.4);
+}
+
+.sync-btn {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+}
+
+.sync-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}
+
+.sync-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.disconnect-btn {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid #475569;
+}
+
+.disconnect-btn:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.gmail-message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 16px;
+}
+
+.error-msg {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.success-msg {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86efac;
+}
+
+/* Suggestions UI */
+.suggestions-container {
+    margin-top: 24px;
+    border-top: 1px solid #334155;
+    padding-top: 20px;
+}
+
+.suggestions-container h3 {
+    font-size: 16px;
+    color: #38bdf8;
+    margin: 0 0 4px 0;
+}
+
+.suggestions-subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 0 0 16px 0;
+}
+
+.suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.suggestion-card {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color 0.2s;
+}
+
+.suggestion-card:hover {
+    border-color: #38bdf8;
+}
+
+.email-meta {
+    border-bottom: 1px dashed #334155;
+    padding-bottom: 12px;
+}
+
+.email-subject {
+    font-weight: 600;
+    color: #f1f5f9;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.email-from {
+    font-size: 12px;
+    color: #38bdf8;
+    margin-bottom: 6px;
+}
+
+.email-snippet {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.suggestion-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.field-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.field-group input,
+.field-group select {
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #f8fafc;
+    font-size: 14px;
+}
+
+.field-group input:focus,
+.field-group select:focus {
+    outline: none;
+    border-color: #38bdf8;
+}
+
+.field-row {
+    display: flex;
+    gap: 12px;
+}
+
+.suggestion-card-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.confirm-btn {
+    background: #22c55e;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.confirm-btn:hover {
+    background: #16a34a;
+}
+
+.dismiss-btn {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid #475569;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.dismiss-btn:hover {
+    color: #f8fafc;
+    background: #334155;
+}

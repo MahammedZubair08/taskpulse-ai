@@ -59,6 +59,16 @@ public class AIService {
 
         try {
 
+            // Remove Markdown code fences if Gemini adds them
+            response = response
+                    .trim()
+                    .replaceFirst("^```json\\s*", "")
+                    .replaceFirst("^```\\s*", "")
+                    .replaceFirst("\\s*```$", "")
+                    .trim();
+
+            log.debug("Cleaned Gemini response: {}", response);
+
             AITaskResponse task =
                     objectMapper.readValue(
                             response,
@@ -71,6 +81,12 @@ public class AIService {
 
         } catch (Exception e) {
 
+            log.error(
+                    "Failed to parse Gemini response: {}",
+                    response,
+                    e
+            );
+
             throw new AIProcessingException(
                     "Gemini returned an invalid task response.",
                     e
@@ -81,34 +97,41 @@ public class AIService {
 
         return chatClient.prompt()
                 .system("""
-                    You are TaskPulse's task extraction model.
+                You are TaskPulse's task extraction model.
 
-                    Extract ONLY information explicitly stated or directly
-                    implied by the user.
+                Extract ONLY information explicitly stated or directly
+                implied by the user.
 
-                    Rules:
-                    - Do not invent dates or times.
-                    - Do not invent priorities.
-                    - Do not invent durations.
-                    - Preserve the user's deadline expression.
-                    - Convert explicit durations into minutes.
-                    - If no duration is stated, return null.
-                    - If no deadline is stated, return null.
-                    - If no priority is stated, use MEDIUM.
-                    - "urgent" means URGENT.
-                    - "high priority" means HIGH.
-                    - "low priority" means LOW.
+                Rules:
+                - Do not invent dates or times.
+                - Do not invent priorities.
+                - Do not invent durations.
+                - Preserve the user's deadline expression.
+                - Convert explicit durations into minutes.
+                - If no duration is stated, return null.
+                - If no deadline is stated, return null.
+                - If no priority is stated, use MEDIUM.
+                - "urgent" means URGENT.
+                - "high priority" means HIGH.
+                - "low priority" means LOW.
+                - The title must be short and actionable.
 
-                    Return ONLY valid JSON.
+                IMPORTANT:
+                - Return ONLY the JSON object.
+                - Do NOT use Markdown.
+                - Do NOT use ```json.
+                - Do NOT include explanations.
+                - Do NOT include text before or after the JSON.
 
-                    Schema:
-                    {
-                      "title": "short actionable task title",
-                      "priority": "LOW|MEDIUM|HIGH|URGENT",
-                      "deadlineExpression": "exact deadline expression from the user or null",
-                      "estimatedDurationMinutes": number or null
-                    }
-                    """)
+                Return exactly this structure:
+
+                {
+                  "title": "short actionable task title",
+                  "priority": "LOW|MEDIUM|HIGH|URGENT",
+                  "deadlineExpression": "exact deadline expression from the user or null",
+                  "estimatedDurationMinutes": number or null
+                }
+                """)
                 .user(userPrompt)
                 .call()
                 .content();

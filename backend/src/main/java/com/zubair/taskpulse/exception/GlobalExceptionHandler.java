@@ -141,17 +141,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(AIProcessingException.class)
-    public ResponseEntity<ApiResponse> handleAIProcessingException(
+    public ResponseEntity<ApiResponse<Object>> handleAIProcessingException(
             AIProcessingException ex
     ) {
 
-        ApiResponse response = new ApiResponse(
-                503,
-                ex.getMessage(),
-                false,
-                new Object(),
-                System.currentTimeMillis()
-        );
+        log.error("AI processing error: {}", ex.getMessage(), ex);
+
+        ApiResponse<Object> response =
+                new ApiResponse<>(
+                        HttpStatus.SERVICE_UNAVAILABLE.value(),
+                        ex.getMessage(),
+                        false,
+                        "",
+                        null
+                );
 
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)

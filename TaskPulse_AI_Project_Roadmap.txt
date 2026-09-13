@@ -1,0 +1,872 @@
+# TaskPulse AI — Project Progress & Roadmap
+
+## 1. Project Vision
+
+TaskPulse AI is an AI-powered task management system that converts information
+from natural language, emails, messages, calendars, and other sources into
+structured, actionable tasks.
+
+Long-term vision:
+
+Emails + WhatsApp + Calendar + Chat/User Input + Other Sources
+                            ↓
+                       TaskPulse AI
+                            ↓
+              Understanding / Extraction
+              Deadline / Priority Detection
+              Planning / Scheduling
+                            ↓
+                           Tasks
+                            ↓
+                      PostgreSQL
+                            ↓
+                  Dashboard / Reminders
+
+---
+
+## 2. Technology Stack
+
+### Frontend
+- React
+- JavaScript / JSX
+- Axios
+- CSS
+- React components
+- Dashboard-based UI
+
+### Backend
+- Java 21
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- Hibernate
+- JWT Authentication
+- Bean Validation
+- PostgreSQL
+- Spring AI
+- Gemini API
+
+### AI
+- Google Gemini API
+- Spring AI integration
+- Gemini API key authentication
+
+Note: We are currently using Gemini through the API. A fine-tuned model is NOT
+part of the current implementation.
+
+---
+
+## 3. Completed — Backend
+
+### Authentication
+- User registration
+- User login
+- JWT authentication
+- JWT token generation
+- JWT validation
+- Spring Security configuration
+- Protected API endpoints
+- User identity extraction from JWT
+- User-specific data access
+
+### Task Management
+Complete Task CRUD functionality.
+
+Task fields:
+- ID
+- Title
+- Description
+- Status
+- Priority
+- Deadline
+- Estimated duration
+- Completed timestamp
+- Created timestamp
+- Updated timestamp
+- User ownership
+
+Task statuses:
+- TODO
+- IN_PROGRESS
+- COMPLETED
+
+Task priorities:
+- LOW
+- MEDIUM
+- HIGH
+- URGENT
+
+### Task APIs
+- POST /api/tasks
+- GET /api/tasks
+- GET /api/tasks/{id}
+- PUT /api/tasks/{id}
+- DELETE /api/tasks/{id}
+
+### Task Filtering
+- Filter by status
+- Filter by priority
+
+### Validation
+- Title required, maximum 200 characters
+- Description maximum 5000 characters
+- Deadline must be in the future
+- Estimated duration: 1–1440 minutes
+
+### Task Ownership / Security
+Tasks belong to the authenticated user. User-specific queries such as
+findByIdAndUserId(...) prevent users from accessing other users' tasks.
+
+---
+
+## 4. Completed — AI Backend
+
+### Gemini Task Extraction
+
+Natural-language example:
+
+"Finish my DBMS assignment by Friday, high priority, it should take around
+2 hours."
+
+Gemini extracts structured information such as:
+
+{
+  "title": "Finish DBMS assignment",
+  "priority": "HIGH",
+  "deadlineExpression": "by Friday",
+  "estimatedDurationMinutes": 120
+}
+
+### AI Preview Flow
+
+User Input
+    ↓
+Gemini
+    ↓
+Structured Task
+    ↓
+Editable AI Preview
+    ↓
+User edits if necessary
+    ↓
+User confirms
+    ↓
+Task saved
+
+The AI preview allows editing of:
+- Title
+- Description
+- Priority
+- Deadline
+- Estimated duration
+
+### Deadline Parser
+
+Implemented DeadlineParser supporting expressions such as:
+- today
+- tomorrow
+- in 3 days
+- Monday
+- next Monday
+- ISO dates
+- by Friday
+- before Monday
+- time expressions such as tomorrow at 5 PM
+
+### AI Validation
+- Empty title detection
+- Title length validation
+- Priority validation
+- Duration validation
+- Invalid AI response detection
+
+### AI Retry Handling
+Gemini requests have retry handling for temporary failures.
+
+### AI Rate Limiting
+AI requests are rate-limited to:
+- Control Gemini API usage
+- Control costs
+- Reduce abuse
+- Protect the backend
+
+### AI Response Caching
+AI task extraction uses caching to avoid unnecessary repeated Gemini requests.
+
+---
+
+## 5. Completed — React Frontend
+
+The React frontend has already been implemented.
+
+Structure:
+
+src/
+├── components/
+│   ├── AITaskInput.jsx
+│   ├── TaskList.jsx
+│   └── TaskCard.jsx
+│
+├── pages/
+│   └── Dashboard.jsx
+│
+├── services/
+│   └── api.js
+│
+└── styles/
+    └── CSS files
+
+### Dashboard
+Implemented:
+- AI task creation
+- Task list
+- Task statistics
+- Status filtering
+- Priority filtering
+- Deadline filtering
+- Search
+- Sorting
+- Task count
+- Deadline overview
+
+### Dashboard Statistics
+- Total Tasks
+- To Do
+- In Progress
+- Completed
+- Overdue
+- Due Today
+- Upcoming
+
+### Search
+Task search functionality is implemented.
+
+### Smart Sorting
+Sorting includes:
+- Newest
+- Oldest
+- Priority
+- Deadline
+- Title
+
+### Deadline Awareness
+Tasks visually indicate:
+- OVERDUE
+- TODAY
+- UPCOMING
+
+### Editable Tasks
+Task cards allow editing:
+- Title
+- Description
+- Status
+- Priority
+- Deadline
+- Estimated duration
+
+Users can also:
+- Complete tasks
+- Delete tasks
+- Change status
+
+### Frontend API Layer
+Axios service communicates with:
+- /api/auth/login
+- /api/auth/register
+- /api/tasks
+- /api/tasks/{id}
+- /api/ai/extract-task
+- /api/ai/tasks
+
+JWT is automatically attached to authenticated requests.
+
+---
+
+## 6. Current AI Architecture
+
+Natural Language
+       ↓
+POST /api/ai/extract-task
+       ↓
+Gemini API
+       ↓
+AITaskResponse
+       ↓
+DeadlineParser
+       ↓
+Editable AI Preview
+       ↓
+User Confirmation
+       ↓
+POST /api/ai/tasks
+       ↓
+TaskService
+       ↓
+PostgreSQL
+
+Important:
+The confirmation step should NOT call Gemini again. Gemini is used for
+extraction; the approved structured task should be saved directly.
+
+---
+
+# 7. NEXT DEVELOPMENT PHASE
+
+## Phase 1 — Finish Core Task Management
+
+### Manual Task Creation
+
+Add a manual task creation option alongside AI creation.
+
+Dashboard:
++ Create Task Manually
+
+Manual fields:
+- Title
+- Description
+- Status
+- Priority
+- Deadline
+- Estimated duration
+
+Flow:
+
+User
+ ↓
+Manual Task Form
+ ↓
+POST /api/tasks
+ ↓
+TaskService
+ ↓
+PostgreSQL
+ ↓
+Dashboard
+
+Also:
+- Verify complete CRUD UX
+- Improve AI extraction edge cases
+- Improve deadline parser
+- Add backend tests
+- Add frontend tests
+
+---
+
+# 8. Phase 2 — Gmail Integration
+
+Integrate Gmail API.
+
+Goal:
+
+Gmail
+  ↓
+TaskPulse AI
+  ↓
+Read relevant emails
+  ↓
+AI extraction
+  ↓
+Task suggestion
+  ↓
+User confirmation
+  ↓
+Task
+
+Example:
+
+"Professor: Please submit the DBMS assignment by Friday."
+
+Detected:
+- Task: Submit DBMS assignment
+- Deadline: Friday
+
+Important:
+AI should suggest tasks rather than automatically creating potentially
+incorrect tasks without user confirmation.
+
+---
+
+# 9. Phase 3 — Google Calendar Integration
+
+Capabilities:
+- Read calendar events
+- Detect commitments
+- Identify deadlines
+- Create calendar events
+- Schedule tasks
+- Avoid scheduling conflicts
+
+Example:
+
+Task: Prepare presentation
+Duration: 2 hours
+Deadline: Friday
+
+TaskPulse can determine an appropriate available time slot.
+
+---
+
+# 10. Phase 4 — Intelligent Scheduling
+
+Build an AI scheduling engine.
+
+Consider:
+- Task priority
+- Deadline
+- Estimated duration
+- Existing calendar events
+- Working hours
+- User preferences
+- Task dependencies
+
+---
+
+# 11. Phase 5 — Reminder System
+
+Possible reminders:
+- Deadline reminder
+- Task start reminder
+- Overdue reminder
+- Daily task summary
+- Upcoming task reminder
+
+Example:
+"Your DBMS assignment is due tomorrow."
+
+---
+
+# 12. Phase 6 — WhatsApp → Task Integration
+
+## FUTURE FEATURE
+
+Add WhatsApp as a task input source.
+
+Goal:
+
+WhatsApp Message
+       ↓
+TaskPulse
+       ↓
+AI extraction
+       ↓
+Task suggestion
+       ↓
+User confirmation
+       ↓
+Task created
+
+Example WhatsApp message:
+
+"Hey, don't forget to submit the project report by Monday. It should take
+about 2 hours."
+
+TaskPulse extracts:
+
+{
+  "title": "Submit project report",
+  "priority": "MEDIUM",
+  "deadlineExpression": "by Monday",
+  "estimatedDurationMinutes": 120
+}
+
+User sees:
+
+AI detected a task
+
+Submit project report
+Deadline: Monday
+Duration: 2 hours
+
+[Edit] [Create Task]
+
+### Potential Architecture
+
+WhatsApp
+   ↓
+WhatsApp Business API
+   ↓
+Webhook Server
+   ↓
+TaskPulse Backend
+   ↓
+Gemini AI
+   ↓
+Task Extraction
+   ↓
+User Approval
+   ↓
+PostgreSQL
+
+The exact WhatsApp integration method will depend on the supported WhatsApp
+Business/API capabilities and account configuration at implementation time.
+
+---
+
+# 13. Phase 7 — Other Messaging Integrations
+
+Potential future sources:
+- WhatsApp
+- Gmail
+- Microsoft Outlook
+- Slack
+- Microsoft Teams
+- Telegram
+- Discord
+
+Eventually use a common ingestion layer:
+
+Gmail ───────┐
+WhatsApp ────┤
+Outlook ─────┤
+Slack ───────┤
+Calendar ────┘
+       ↓
+TaskPulse Ingestion Layer
+       ↓
+AI Extraction
+       ↓
+Task Engine
+
+---
+
+# 14. Phase 8 — AI Chat Assistant
+
+Build a conversational TaskPulse assistant.
+
+Example:
+
+User:
+"What do I need to finish this week?"
+
+AI:
+"You have 5 tasks due this week..."
+
+Eventually support:
+- Create task
+- Update task
+- Delete task
+- Complete task
+- Change priority
+- Change deadline
+- Find tasks
+- Summarize tasks
+- Schedule tasks
+
+---
+
+# 15. Phase 9 — Smart Task Intelligence
+
+### Task Decomposition
+
+"Build my final year project"
+
+↓
+
+1. Define requirements
+2. Design architecture
+3. Create database
+4. Implement backend
+5. Implement frontend
+6. Testing
+7. Documentation
+
+### Priority Reasoning
+
+AI can suggest priority based on:
+- Deadline
+- Importance
+- Dependencies
+- Context
+- User instructions
+
+### Duration Estimation
+
+AI can estimate task duration when the user does not provide one.
+
+AI-estimated values should be clearly marked as estimates.
+
+---
+
+# 16. Phase 10 — Task Dependencies
+
+Support:
+
+Task A
+   ↓
+Task B
+   ↓
+Task C
+
+Example:
+
+Complete database design
+        ↓
+Implement backend
+        ↓
+Connect frontend
+        ↓
+Testing
+
+---
+
+# 17. Phase 11 — Notifications
+
+Potential notification channels:
+- Web notifications
+- Email
+- WhatsApp
+- Push notifications
+- Mobile notifications
+
+---
+
+# 18. Phase 12 — Redis
+
+Potential uses:
+- AI response caching
+- Rate limiting
+- Session/state management
+- Temporary scheduling state
+- Background jobs
+- Distributed caching
+
+Architecture:
+
+React
+ ↓
+Spring Boot
+ ├── PostgreSQL
+ ├── Redis
+ └── Gemini
+
+---
+
+# 19. Phase 13 — Background Jobs
+
+Potential jobs:
+- Email synchronization
+- WhatsApp message processing
+- Calendar synchronization
+- Reminder processing
+- Daily summaries
+- Overdue detection
+- AI processing
+
+Possible architecture:
+
+Webhook / Scheduler
+       ↓
+Message Queue
+       ↓
+Background Worker
+       ↓
+AI Processing
+       ↓
+Task Engine
+
+---
+
+# 20. Phase 14 — Docker & Deployment
+
+Potential containers:
+- Frontend
+- Backend
+- PostgreSQL
+- Redis
+
+Docker Compose:
+
+docker-compose
+├── frontend
+├── backend
+├── postgres
+└── redis
+
+---
+
+# 21. Phase 15 — Testing
+
+## Backend
+- Unit tests
+- Controller tests
+- Service tests
+- Repository tests
+- Security tests
+- AI service tests
+- Deadline parser tests
+
+## Frontend
+- Component tests
+- API tests
+- Dashboard tests
+- AI preview tests
+- Task editing tests
+
+## Integration
+Test:
+
+React
+ ↓
+Spring Boot
+ ↓
+PostgreSQL
+
+and:
+
+Spring Boot
+ ↓
+Gemini API
+
+---
+
+# 22. Phase 16 — Production Security
+
+Before production:
+- Move secrets to environment variables
+- Secure Gemini API key
+- Secure JWT secret
+- Configure CORS properly
+- Add request validation
+- Add rate limiting
+- Add API logging
+- Avoid exposing sensitive information
+- Secure OAuth tokens
+- Encrypt sensitive integration credentials
+- Implement proper error responses
+- Add audit logging where necessary
+
+---
+
+# 23. Phase 17 — Observability
+
+Add:
+- Application logging
+- AI request metrics
+- Error tracking
+- API latency metrics
+- Database monitoring
+- Gemini usage monitoring
+- Rate-limit monitoring
+
+Useful metrics:
+- AI requests
+- AI failures
+- Average AI latency
+- Tasks created
+- Tasks completed
+- Tasks created through AI
+- Tasks created manually
+- Tasks created from Gmail
+- Tasks created from WhatsApp
+
+---
+
+# 24. Long-Term Product Vision
+
+Eventually TaskPulse should become a unified AI productivity layer.
+
+Gmail ────────┐
+WhatsApp ─────┤
+Calendar ─────┤
+Slack ────────┤
+Outlook ──────┘
+       ↓
+┌───────────────────────────┐
+│       TaskPulse AI        │
+│                           │
+│ Understanding             │
+│ Extraction                │
+│ Reasoning                 │
+│ Planning                  │
+│ Scheduling                │
+│ Reminders                 │
+└─────────────┬─────────────┘
+              ↓
+       Tasks / Calendar /
+          Reminders
+              ↓
+          PostgreSQL
+
+---
+
+# 25. Development Checklist
+
+## DONE
+
+- [x] Spring Boot backend
+- [x] PostgreSQL
+- [x] User registration
+- [x] Login
+- [x] JWT authentication
+- [x] Task entity
+- [x] Task CRUD
+- [x] Task validation
+- [x] Task ownership/security
+- [x] React frontend
+- [x] Dashboard
+- [x] Task list
+- [x] Task editing
+- [x] Search
+- [x] Filters
+- [x] Sorting
+- [x] Deadline awareness
+- [x] Gemini API integration
+- [x] AI task extraction
+- [x] AI preview
+- [x] Editable AI preview
+- [x] Deadline parser
+- [x] AI validation
+- [x] AI retry handling
+- [x] AI rate limiting
+- [x] AI caching
+
+## NEXT
+
+- [ ] Manual task creation
+- [ ] Verify complete Task CRUD UX
+- [ ] Improve AI extraction edge cases
+- [ ] Improve deadline parser
+- [ ] Backend tests
+- [ ] Frontend tests
+
+## AFTER CORE IS STABLE
+
+- [ ] Gmail OAuth
+- [ ] Gmail synchronization
+- [ ] Email → Task
+- [ ] Google Calendar integration
+- [ ] Intelligent scheduling
+- [ ] Reminder system
+- [ ] Background jobs
+- [ ] Redis
+
+## FUTURE INTEGRATIONS
+
+- [ ] WhatsApp → Task
+- [ ] Outlook → Task
+- [ ] Slack → Task
+- [ ] Microsoft Teams → Task
+- [ ] Telegram → Task
+
+## ADVANCED AI
+
+- [ ] AI chat assistant
+- [ ] Task decomposition
+- [ ] AI duration estimation
+- [ ] AI priority suggestions
+- [ ] Task dependencies
+- [ ] Intelligent scheduling
+- [ ] Productivity insights
+- [ ] Personalized task recommendations
+
+## PRODUCTION
+
+- [ ] Docker
+- [ ] CI/CD
+- [ ] Production database
+- [ ] Secrets management
+- [ ] Monitoring
+- [ ] Logging
+- [ ] Metrics
+- [ ] Security hardening
+- [ ] Deployment

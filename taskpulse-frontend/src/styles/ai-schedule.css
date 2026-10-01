@@ -1,0 +1,217 @@
+.ai-schedule-section {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.ai-schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.ai-schedule-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ai-schedule-icon {
+    font-size: 32px;
+    background: rgba(34, 197, 94, 0.1);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.ai-schedule-title h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 4px 0;
+}
+
+.ai-schedule-title p {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.ai-schedule-generate-btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s ease;
+}
+
+.ai-schedule-generate-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.ai-schedule-generate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.schedule-msg {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 16px;
+}
+
+.schedule-error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.schedule-success {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86efac;
+}
+
+.schedule-results {
+    margin-top: 24px;
+    border-top: 1px solid #334155;
+    padding-top: 20px;
+}
+
+.strategy-box {
+    background: #0f172a;
+    border: 1px solid #38bdf8;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #f1f5f9;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.schedule-timeline h3 {
+    font-size: 16px;
+    color: #38bdf8;
+    margin: 0 0 16px 0;
+}
+
+.timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.timeline-card {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.timeline-time {
+    font-weight: 700;
+    font-size: 14px;
+    color: #38bdf8;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.timeline-duration {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: normal;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.timeline-task-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #f8fafc;
+}
+
+.priority-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.priority-tag.priority-low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+.priority-tag.priority-medium { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+.priority-tag.priority-high { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+.priority-tag.priority-urgent { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+.timeline-reasoning {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.schedule-apply-controls {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-top: 1px solid #334155;
+    padding-top: 16px;
+}
+
+.export-calendar-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #cbd5e1;
+    cursor: pointer;
+}
+
+.apply-schedule-btn {
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.apply-schedule-btn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.apply-schedule-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

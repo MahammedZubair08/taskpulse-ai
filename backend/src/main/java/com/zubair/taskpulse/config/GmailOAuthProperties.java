@@ -12,5 +12,5 @@ public class GmailOAuthProperties {
     private String clientId;
     private String clientSecret;
     private String redirectUri = "http://localhost:8080/api/gmail/callback";
-    private String scope = "https://www.googleapis.com/auth/gmail.readonly";
+    private String scope = "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events";
 }

@@ -1,0 +1,146 @@
+.calendar-sync-section {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.calendar-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.calendar-icon {
+    font-size: 32px;
+    background: rgba(168, 85, 247, 0.1);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.calendar-title h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 4px 0;
+}
+
+.calendar-title p {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.calendar-refresh-btn {
+    background: #334155;
+    color: #f8fafc;
+    border: 1px solid #475569;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.calendar-refresh-btn:hover {
+    background: #475569;
+}
+
+.conflicts-banner {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.conflicts-banner-title {
+    color: #fca5a5;
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.conflicts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.conflict-item {
+    font-size: 13px;
+    color: #cbd5e1;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.conflict-task {
+    font-weight: 600;
+    color: #ef4444;
+}
+
+.conflict-vs {
+    color: #94a3b8;
+}
+
+.conflict-event {
+    font-weight: 600;
+    color: #f59e0b;
+}
+
+.events-overview h3 {
+    font-size: 15px;
+    color: #c084fc;
+    margin: 0 0 12px 0;
+}
+
+.no-events {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.event-card {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.event-time {
+    font-size: 12px;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 4px;
+}
+
+.event-summary {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 4px;
+}
+
+.event-date {
+    font-size: 11px;
+    color: #94a3b8;
+}

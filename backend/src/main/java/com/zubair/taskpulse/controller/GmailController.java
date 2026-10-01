@@ -96,10 +96,10 @@ public class GmailController {
     }
 
     @PostMapping("/sync")
-    public ResponseEntity<List<GmailSuggestionResponse>> syncGmail(Authentication authentication) {
+    public ResponseEntity<com.zubair.taskpulse.dto.gmail.GmailSyncResultResponse> syncGmail(Authentication authentication) {
         User user = getUser(authentication);
-        List<GmailSuggestionResponse> suggestions = gmailService.fetchTaskSuggestions(user);
-        return ResponseEntity.ok(suggestions);
+        com.zubair.taskpulse.dto.gmail.GmailSyncResultResponse result = gmailService.fetchTaskSuggestions(user);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/disconnect")

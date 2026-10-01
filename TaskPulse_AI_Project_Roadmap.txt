@@ -831,12 +831,12 @@ Outlook ──────┘
 
 ## AFTER CORE IS STABLE
 
-- [ ] Gmail OAuth
-- [ ] Gmail synchronization
-- [ ] Email → Task
-- [ ] Google Calendar integration
-- [ ] Intelligent scheduling
-- [ ] Reminder system
+- [x] Gmail OAuth
+- [x] Gmail synchronization
+- [x] Email → Task
+- [x] Google Calendar integration
+- [x] Intelligent scheduling
+- [x] Reminder & Notification system
 - [ ] Background jobs
 - [ ] Redis
 

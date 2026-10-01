@@ -1,4 +1,4 @@
-﻿.task-list {
+.task-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -124,6 +124,12 @@
 }
 .task-actions .delete-button {
     background: #dc2626;
+}
+.task-actions .calendar-export-button {
+    background: #0284c7;
+}
+.task-actions .calendar-export-button:hover {
+    background: #0369a1;
 }
 /* =========================
    EDIT MODE

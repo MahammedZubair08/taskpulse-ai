@@ -1,5 +1,5 @@
-﻿import { useState } from "react";
-import { updateTask, deleteTask } from "../services/api";
+import { useState } from "react";
+import { updateTask, deleteTask, exportTaskToCalendar } from "../services/api";
 function TaskCard({
     task,
     onTaskUpdated,
@@ -280,6 +280,22 @@ function TaskCard({
         );
     }
 
+    const handleExportToCalendar = async () => {
+        setLoading(true);
+        try {
+            await exportTaskToCalendar(task.id);
+            alert(`✨ Task "${task.title}" exported to Google Calendar!`);
+        } catch (error) {
+            console.error(error);
+            alert(
+                error.response?.data?.message ||
+                "Failed to export task to Google Calendar. Make sure Google Calendar is connected."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <article
             className={
@@ -358,6 +374,14 @@ function TaskCard({
                 </select>
             </div>
             <div className="task-actions">
+                <button
+                    className="calendar-export-button"
+                    onClick={handleExportToCalendar}
+                    disabled={loading}
+                    title="Export task event to Google Calendar"
+                >
+                    📅 Export to Calendar
+                </button>
                 <button
                     onClick={handleEditStart}
                     disabled={loading}

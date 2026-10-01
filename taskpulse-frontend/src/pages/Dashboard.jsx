@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import AITaskInput from "../components/AITaskInput";
 import ManualTaskInput from "../components/ManualTaskInput";
 import GmailSync from "../components/GmailSync";
+import CalendarSync from "../components/CalendarSync";
+import AISchedulePanel from "../components/AISchedulePanel";
 import TaskList from "../components/TaskList";
 import { getTasks } from "../services/api";
-
+import NotificationCenter from "../components/NotificationCenter";
 import "../styles/dashboard.css";
 function Dashboard({ onLogout }) {
     const [tasks, setTasks] = useState([]);
@@ -103,7 +105,7 @@ function Dashboard({ onLogout }) {
                             );
                     }
                 }
-            }
+            }   
 
             return (
                 statusMatches &&
@@ -210,12 +212,15 @@ function Dashboard({ onLogout }) {
                         Turn your thoughts into tasks.
                     </p>
                 </div>
-                <button
-                    className="logout-button"
-                    onClick={onLogout}
-                >
-                    Logout
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <NotificationCenter />
+                    <button
+                        className="logout-button"
+                        onClick={onLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
             {/* =========================
                 CREATE TASK
@@ -239,7 +244,7 @@ function Dashboard({ onLogout }) {
                             setCreationMode("AI")
                         }
                     >
-                        ✨ Create with AI
+                        ? Create with AI
                     </button>
                     <button
                         className={
@@ -251,7 +256,7 @@ function Dashboard({ onLogout }) {
                             setCreationMode("MANUAL")
                         }
                     >
-                        ＋ Manual Task
+                        + Manual Task
                     </button>
                 </div>
                 {/* SELECTED FORM */}
@@ -267,9 +272,11 @@ function Dashboard({ onLogout }) {
             </section>
 
             {/* =========================
-                GMAIL INTEGRATION
+                GMAIL & CALENDAR INTEGRATION
                ========================= */}
             <GmailSync onTaskCreated={handleTaskCreated} />
+            <CalendarSync />
+            <AISchedulePanel onScheduleApplied={loadTasks} />
             {/* =========================
                 STATISTICS
                ========================= */}
@@ -344,7 +351,7 @@ function Dashboard({ onLogout }) {
                         }
                     >
                         <div className="deadline-card-icon">
-                            ◷
+                            ?
                         </div>
 
                         <div>
@@ -370,7 +377,7 @@ function Dashboard({ onLogout }) {
                         }
                     >
                         <div className="deadline-card-icon">
-                            →
+                            ?
                         </div>
 
                         <div>
@@ -382,7 +389,7 @@ function Dashboard({ onLogout }) {
                 </div>
 
             </section>
-            {/* =========================
+{/* =========================
                 TASK LIST
                ========================= */}
             <section className="your-tasks">
@@ -398,7 +405,7 @@ function Dashboard({ onLogout }) {
                                     ? "Due Today"
                                     : "Upcoming"
                         }
-                        <span>×</span>
+                        <span>�</span>
                     </button>
                 )}
                 <div className="task-section-header">
@@ -515,3 +522,4 @@ function Dashboard({ onLogout }) {
     );
 }
 export default Dashboard;
+

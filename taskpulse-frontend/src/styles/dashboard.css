@@ -1,4 +1,4 @@
-﻿/* ================================
+/* ================================
    Dashboard Responsive Layout
    ================================ */
 .dashboard {
@@ -689,8 +689,5 @@
     font-size: 12px;
     font-weight: 800;
 }
-.ai-warnings p {
-    margin: 3px 0;
-    color: #9a3412;
-    font-size: 12px;
-}
+.ai-warnings p {@media (max-width: 700px) {}
+

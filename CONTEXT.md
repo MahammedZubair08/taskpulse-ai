@@ -300,11 +300,34 @@ SECURITY NOTE: API key and JWT secret are in application.properties for dev only
 - [x] Task suggestion cards with full inline edit, confirm, and dismiss actions
 - [x] Full build verification: backend Java compiled & frontend Vite production build succeeded
 
-### NEXT — Phase 3 (Google Calendar Integration)
-- [ ] Read calendar events, detect deadlines, and schedule tasks
-- Phase 4: Intelligent AI scheduling engine
-- Phase 5: Reminder system (deadline, overdue, daily summary)
-- Phase 6: WhatsApp → Task integration
+### DONE — Phase 3 (Google Calendar Integration)
+- [x] Extended OAuth2 scope to include Google Calendar API (`calendar.readonly` and `calendar.events`)
+- [x] Google Calendar Service (`GoogleCalendarService.java`) with upcoming event reading & RFC 3339 parsing
+- [x] Conflict detection engine (`detectConflicts`) identifying task deadline overlaps with calendar events
+- [x] Free time slot finder (`findFreeTimeSlots`) calculating open windows in user's schedule
+- [x] 1-Click Calendar Export (`exportTaskToCalendar`) creating primary Google Calendar events
+- [x] REST Controller (`CalendarController.java`) exposing events, conflicts, free slots, and export endpoints
+- [x] Frontend `CalendarSync.jsx` & `calendar-sync.css` overview + conflict alert banner
+- [x] "📅 Export to Calendar" action button on `TaskCard.jsx`
+- [x] Full build verification: backend Java compiled & frontend Vite production build succeeded
+
+### DONE — Phase 4 (Intelligent AI Scheduling Engine)
+- [x] AI Scheduling Service (`AISchedulingService.java`) with Gemini prompt engineering & conflict-aware optimization
+- [x] REST Controller (`AISchedulingController.java`) exposing generate and apply endpoints
+- [x] Timeline visualization DTOs (`ScheduledTaskBlock`, `OptimizedScheduleResponse`, `ApplyScheduleRequest`)
+- [x] Batch execution engine updating task deadlines in PostgreSQL & exporting time blocks to Google Calendar
+- [x] Frontend `AISchedulePanel.jsx` component + `ai-schedule.css` dark mode timeline view
+- [x] Full build verification: backend Java compiled & frontend Vite production build succeeded
+
+### DONE — Phase 5 (Reminder & Notification System)
+- [x] Notification entity, repository, and response DTOs
+- [x] Reminder scheduler for approaching deadlines and overdue tasks
+- [x] Daily summary generation for users
+- [x] Notification REST endpoints for listing, unread count, marking read, deleting, and summary generation
+- [x] Frontend notification center with unread badge, filters, and briefing generation
+- [x] Notification types for deadline reminders, overdue tasks, and daily summaries
+
+### NEXT — Phase 6 (WhatsApp → Task integration)
 - Phase 7: Multi-source ingestion layer (Slack, Teams, Telegram, Outlook)
 - Phase 8: AI Chat Assistant (conversational task management)
 - Phase 9: Smart Task Intelligence (decomposition, priority reasoning, duration estimation)

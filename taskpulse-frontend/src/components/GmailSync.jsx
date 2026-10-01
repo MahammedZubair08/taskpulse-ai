@@ -82,9 +82,27 @@ function GmailSync({ onTaskCreated }) {
             setSyncing(true);
             setError("");
             setSuccessMsg("");
-            const results = await syncGmail();
-            setSuggestions(results);
-            if (results.length === 0) {
+            const data = await syncGmail();
+
+            const autoCreated = data.autoCreatedTasks || [];
+            const suggested = data.suggestions || [];
+
+            setSuggestions(suggested);
+
+            // Pass auto-created high/urgent priority tasks to dashboard list immediately
+            if (autoCreated.length > 0) {
+                autoCreated.forEach((task) => {
+                    if (onTaskCreated) onTaskCreated(task);
+                });
+            }
+
+            if (autoCreated.length > 0 && suggested.length > 0) {
+                setSuccessMsg(`⚡ Auto-created ${autoCreated.length} important task(s)! Found ${suggested.length} suggestion(s) for review.`);
+            } else if (autoCreated.length > 0) {
+                setSuccessMsg(`⚡ Auto-created ${autoCreated.length} important task(s) directly into your task list!`);
+            } else if (suggested.length > 0) {
+                setSuccessMsg(`Found ${suggested.length} task suggestion(s) for your review below.`);
+            } else {
                 setSuccessMsg("No new actionable tasks found in unread emails.");
             }
         } catch (err) {

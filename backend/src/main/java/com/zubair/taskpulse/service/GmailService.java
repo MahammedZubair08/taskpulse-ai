@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zubair.taskpulse.dto.ai.AITaskResponse;
 import com.zubair.taskpulse.dto.gmail.GmailSuggestionResponse;
+import com.zubair.taskpulse.dto.gmail.GmailSyncResultResponse;
+import com.zubair.taskpulse.dto.task.CreateTaskRequest;
+import com.zubair.taskpulse.dto.task.TaskResponse;
+import com.zubair.taskpulse.entity.TaskPriority;
 import com.zubair.taskpulse.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +18,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -25,16 +30,18 @@ public class GmailService {
 
     private final GmailOAuthService gmailOAuthService;
     private final AIService aiService;
+    private final TaskService taskService;
     private final ObjectMapper objectMapper;
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    public List<GmailSuggestionResponse> fetchTaskSuggestions(User user) {
+    public GmailSyncResultResponse fetchTaskSuggestions(User user) {
         String accessToken = gmailOAuthService.getValidAccessToken(user);
 
         List<String> messageIds = fetchRecentUnreadMessageIds(accessToken, 10);
         log.info("Found {} unread emails for user {}", messageIds.size(), user.getEmail());
 
+        List<TaskResponse> autoCreatedTasks = new ArrayList<>();
         List<GmailSuggestionResponse> suggestions = new ArrayList<>();
 
         for (String messageId : messageIds) {
@@ -51,24 +58,46 @@ public class GmailService {
                 AITaskResponse aiResponse = aiService.extractTask(promptText);
 
                 if (aiResponse != null && aiResponse.title() != null && !aiResponse.title().isBlank()) {
-                    suggestions.add(new GmailSuggestionResponse(
-                            email.id,
-                            email.subject,
-                            email.from,
-                            email.snippet,
-                            aiResponse.title(),
-                            aiResponse.priority(),
-                            aiResponse.deadlineExpression(),
-                            aiResponse.deadline(),
-                            aiResponse.estimatedDurationMinutes()
-                    ));
+                    TaskPriority priority = aiResponse.priority() != null ? aiResponse.priority() : TaskPriority.MEDIUM;
+                    LocalDateTime deadline = aiResponse.deadline();
+
+                    // If deadline is past, reset to null to pass future validation
+                    if (deadline != null && deadline.isBefore(LocalDateTime.now())) {
+                        deadline = null;
+                    }
+
+                    // Rule: Auto-create HIGH and URGENT priority tasks; treat LOW and MEDIUM as suggestions
+                    if (priority == TaskPriority.HIGH || priority == TaskPriority.URGENT) {
+                        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
+                        createTaskRequest.setTitle(aiResponse.title());
+                        createTaskRequest.setDescription(String.format("⚡ Auto-created from email: \"%s\" from %s", email.subject, email.from));
+                        createTaskRequest.setPriority(priority);
+                        createTaskRequest.setDeadline(deadline);
+                        createTaskRequest.setEstimatedDurationMinutes(aiResponse.estimatedDurationMinutes());
+
+                        TaskResponse createdTask = taskService.createTask(createTaskRequest, user.getEmail());
+                        autoCreatedTasks.add(createdTask);
+                        log.info("Auto-created HIGH/URGENT task from email '{}' for user {}", email.subject, user.getEmail());
+                    } else {
+                        suggestions.add(new GmailSuggestionResponse(
+                                email.id,
+                                email.subject,
+                                email.from,
+                                email.snippet,
+                                aiResponse.title(),
+                                priority,
+                                aiResponse.deadlineExpression(),
+                                deadline,
+                                aiResponse.estimatedDurationMinutes()
+                        ));
+                    }
                 }
             } catch (Exception e) {
                 log.warn("Failed to process email message ID {}: {}", messageId, e.getMessage());
             }
         }
 
-        return suggestions;
+        return new GmailSyncResultResponse(autoCreatedTasks, suggestions);
     }
 
     private List<String> fetchRecentUnreadMessageIds(String accessToken, int limit) {
@@ -151,12 +180,10 @@ public class GmailService {
     private String extractBodyFromPayload(JsonNode payload) {
         if (payload == null) return "";
 
-        // Direct body data
         if (payload.has("body") && payload.get("body").has("data")) {
             return decodeBase64Url(payload.get("body").get("data").asText());
         }
 
-        // Multipart parts
         if (payload.has("parts") && payload.get("parts").isArray()) {
             for (JsonNode part : payload.get("parts")) {
                 String mimeType = part.has("mimeType") ? part.get("mimeType").asText() : "";
@@ -164,7 +191,6 @@ public class GmailService {
                     return decodeBase64Url(part.get("body").get("data").asText());
                 }
             }
-            // Fallback to text/html or any part
             for (JsonNode part : payload.get("parts")) {
                 if (part.has("body") && part.get("body").has("data")) {
                     return decodeBase64Url(part.get("body").get("data").asText());

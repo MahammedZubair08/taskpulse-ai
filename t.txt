@@ -1,0 +1,30 @@
+$body = @'
+{
+  "entry": [
+    {
+      "changes": [
+        {
+          "value": {
+            "messages": [
+              {
+                "id": "test-msg-004-20260926-1146",
+                "from": "8143621676",
+                "type": "text",
+                "text": {
+                  "body": "Finish my GATE preparation notes tomorrow by 8 PM"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+'@
+
+Invoke-RestMethod `
+  -Uri "http://localhost:8080/api/whatsapp/webhook" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body $body

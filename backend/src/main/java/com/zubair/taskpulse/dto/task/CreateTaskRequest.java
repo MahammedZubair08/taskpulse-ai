@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
-
+@Getter 
 @Data
 public class CreateTaskRequest {
 
@@ -28,4 +28,8 @@ public class CreateTaskRequest {
     @Min(value = 1, message = "Estimated duration must be at least 1 minute")
     @Max(value = 1440, message = "Estimated duration cannot exceed 1440 minutes")
     private Integer estimatedDurationMinutes;
+
+
+
+
 }
